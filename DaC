@@ -1,0 +1,115 @@
+public class DaC {
+	public static void main(String [] args){
+		
+		long startTime = 0;
+		long startTime2 = 0;
+		long endTime = 0;
+		long endTime2 = 0;
+		long elapsed;
+		long elapsed2;
+		
+		//Part 1
+		if(args.length != 1){
+			System.out.println("Usage: java LCS <size>");
+			System.exit(0);
+		}
+		
+		int arrLength = Integer.parseInt(args[0]);
+		double [] a = new double[arrLength];
+		
+		//creates array of random integers
+		for(int i = 0; i < a.length; i++){
+			a[i] = (Math.random() * 200.0) - 100.0;
+			//System.out.print(a[i] + ",  ");
+		}
+		//System.out.println();
+		
+		//Find longest subsequence for O(n^3) and print time
+		startTime = System.currentTimeMillis();
+		System.out.println("Longest subsequence for O(n^3): ");
+		System.out.println(On3(a));
+		endTime = System.currentTimeMillis();
+		elapsed = endTime - startTime;
+		System.out.println("Took " + elapsed + " milliseconds for array of size " + arrLength);
+		
+		//Find longest subsequence for O(nlogn)
+		startTime2 = System.currentTimeMillis();
+		System.out.println("Longest subsequence for O(nlogn): ");
+		System.out.println(longSub2(a));
+		endTime2 = System.currentTimeMillis();
+		elapsed2 = endTime2 - startTime2;
+		System.out.println("Took " + elapsed2 + " milliseconds for array of size " + arrLength);
+	}
+	
+	//Part 2
+	//Three for-loops 
+	public static double On3(double [] a){
+		double sum;
+		double maximum = 0.0;
+		for(int start = 0; start < a.length; start++){
+			for(int end = start; end < a.length; end++){
+				sum = 0;
+				for(int k = start; k <= end; k++){
+					sum = sum + a[k];
+				}
+				maximum = max(sum, maximum);
+			}
+		}
+		return maximum;
+	}
+	
+	//Part 4: Divide and conquer 
+	public static double max(double a, double b){
+		return Math.max(a, b);
+	}
+	
+	public static double longSub2(double [] a){
+		return longSub2(a, 0, a.length - 1);
+	}
+	
+	public static double max(double [] a, int low, int mid){
+		double left = 0.0;
+		double sum = 0.0;
+		for(int i = mid; i >= low; i--){
+			sum = sum + a[i];
+			left = max(left, sum);
+		}
+		return left;
+	}
+	
+	//Part 5
+	public static double longSub2(double [] a, double low, double high){
+		if(low > high)
+			return 0;		//0 elements
+		if(low == high)
+			return max(0, a[1]);		//1 element
+		double mid = (low + high) / 2.0;
+		double leftMax = findLeftMax(a, low, mid);
+		double rightMax = findRightMax(a, mid+1, high);
+		double maximum = max(longSub2(a, low, mid), longSub2(a, mid+1.0, high));
+		return max(maximum, leftMax + rightMax);
+	}
+
+
+	public static double findLeftMax(double [] a, double low, double mid){
+		double Lmax = 0.0;
+		double sum = 0.0;
+		for(int i = (int) mid; i >= low; i--){
+			sum = sum + a[i];
+			Lmax = max(Lmax, sum);
+		}
+		return Lmax;
+	}
+	
+	public static double findRightMax(double [] a, double mid, double high){
+		double rightMax = 0.0;
+		double sum = 0.0;
+		for(int i = (int) mid; i <= high; i++){
+			sum += a[i];
+			rightMax = max(rightMax, sum);
+		}
+		return rightMax;
+	}
+}
+
+
